@@ -1,0 +1,31 @@
+using UnityEngine;
+
+public class CollisionHandler : MonoBehaviour
+{
+    public PlayerController playerController; // Reference to the PlayerController script
+    private bool isInvulnerable = false;
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (!isInvulnerable && collision.gameObject.CompareTag("Obstacle")) // Check if the collided object is an obstacle
+        {
+            if (playerController != null && !isInvulnerable)
+            {
+                playerController.DestroyPlayer(); // Call the DestroyPlayer method from the PlayerController script
+            }
+            Debug.Log("Player destroyed by obstacle!");
+            // Implement game over logic or any other required actions
+        }
+    }
+
+    public void SetInvulnerability(float duration)
+    {
+        isInvulnerable = true;
+        Invoke("DisableInvulnerability", duration);
+    }
+
+    private void DisableInvulnerability()
+    {
+        isInvulnerable = false;
+    }
+}
