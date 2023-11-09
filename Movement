@@ -1,0 +1,60 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class Movement : MonoBehaviour
+{
+    public float speed;
+    public float time;
+    public float jumpForce; // Adjust the jump force as needed
+    private float MaxJumps = 1;
+    private float JumpNumber;
+    private float Position;
+    private bool isGrounded;
+    private Rigidbody2D rb;
+
+    // Assign the ground check object in the Inspector
+    public GroundCheck groundCheck;
+
+    void Start()
+    {
+        rb = GetComponent<Rigidbody2D>();
+    }
+
+    void Update()
+    {
+        isGrounded = groundCheck.IsGrounded;
+        Move();
+        Jump();
+    }
+
+    void Move()
+    {
+        transform.Translate(Vector2.right * speed * Time.deltaTime * time);
+    }
+
+    void Jump()
+    {
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            if (JumpNumber < MaxJumps)
+            {
+                JumpNumber++;
+                rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse); // Apply the jump force
+            }
+            else if (JumpNumber >= MaxJumps && !isGrounded)
+            {
+                Vector3 newPosition = transform.position;
+                newPosition.y = 0;
+                transform.position = newPosition;
+                JumpNumber = 0;
+                rb.velocity = new Vector2(rb.velocity.x, 0f);
+            }
+        }
+
+        if (isGrounded)
+        {
+            JumpNumber = 0;
+        }
+    }
+}
