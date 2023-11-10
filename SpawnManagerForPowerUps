@@ -1,0 +1,44 @@
+using UnityEngine;
+
+[System.Serializable]
+public class PowerUpPrefab
+{
+    public GameObject powerUp;
+    [Range(0, 100)]
+    public float spawnPercentage;
+}
+
+public class SpawnManagerForPowerUps : MonoBehaviour
+{
+    public PowerUpPrefab[] powerUpPrefabs;
+    public float minX = 10f;
+    public float maxX = 15f;
+    public int numberOfPrefabs = 10;
+
+    void Start()
+    {
+        for (int i = 0; i < numberOfPrefabs; i++)
+        {
+            SpawnPrefab();
+        }
+    }
+
+    void SpawnPrefab()
+    {
+        float randomX = Random.Range(minX, maxX);
+        Vector3 spawnPosition = new Vector3(randomX, transform.position.y, transform.position.z);
+
+        float randomSpawn = Random.Range(0, 100);
+        float cumulativePercentage = 0;
+
+        foreach (var powerUpPrefab in powerUpPrefabs)
+        {
+            cumulativePercentage += powerUpPrefab.spawnPercentage;
+            if (randomSpawn <= cumulativePercentage)
+            {
+                Instantiate(powerUpPrefab.powerUp, spawnPosition, Quaternion.identity);
+                break;
+            }
+        }
+    }
+}
