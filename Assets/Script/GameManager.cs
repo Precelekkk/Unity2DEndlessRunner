@@ -46,7 +46,7 @@ public class GameManager : MonoBehaviour
         {
             Restart();
         }
-        else if (Input.GetKeyDown(KeyCode.Escape))
+        else if (Input.GetKeyDown(KeyCode.Escape) && !SettingsMenu.BlocksEscape)
         {
             BackToMenu();
         }

@@ -24,6 +24,8 @@ The Game itself is a small project that was intended to help me with Self-Develo
 | S / Down arrow | Slam down (in the air) |
 | Esc | Pause / back to menu (Game Over) |
 | R | Restart (Game Over) |
+| F2 | Retro CRT effect on / off |
+| M | Mute / unmute sound |
 
 ## Credits
 - UI: [Fantasy Wooden GUI : Free](https://assetstore.unity.com/packages/2d/gui/fantasy-wooden-gui-free-103811) (Unity Asset Store)
