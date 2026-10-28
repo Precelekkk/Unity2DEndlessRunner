@@ -13,6 +13,26 @@ public class AudioManager : MonoBehaviour
     // Volume each source had in the scene / prefab - settings multiply it, never overwrite it
     private readonly Dictionary<AudioSource, float> baseVolumes = new Dictionary<AudioSource, float>();
     private float rescanTimer;
+    private AudioSource sfxSource;     // Plays the RetroSfx sounds (counts as an effect: short clips)
+
+    public static AudioManager Instance { get; private set; }
+
+    // One-shot sound effect, e.g. AudioManager.PlaySfx(RetroSfx.Death).
+    // Keeps playing across scene changes, so a click that loads a scene is not cut off.
+    public static void PlaySfx(AudioClip clip)
+    {
+        if (Instance != null && clip != null)
+        {
+            Instance.sfxSource.PlayOneShot(clip);
+        }
+    }
+
+    private void Awake()
+    {
+        Instance = this;
+        sfxSource = gameObject.AddComponent<AudioSource>();
+        sfxSource.playOnAwake = false;
+    }
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
     private static void CreateOnStart()

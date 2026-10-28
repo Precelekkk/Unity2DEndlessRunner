@@ -738,8 +738,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   objectToSpawn: {fileID: 1608230113}
   spawnAreaObject: {fileID: 1669087257}
-  minSpawnInterval: 4
-  maxSpawnInterval: 15
+  minSpawnInterval: 0.6
+  maxSpawnInterval: 1.8
 --- !u!65 &640262215
 BoxCollider:
   m_ObjectHideFlags: 0

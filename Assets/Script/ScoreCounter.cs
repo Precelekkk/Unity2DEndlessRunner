@@ -45,7 +45,7 @@ public class ScoreCounter : MonoBehaviour
         // Check if the player is not null before updating the score
         if (playerPrefab != null)
         {
-            if (value == 20 && powerUpPrefab != null)
+            if (value == 20) // +20 = the points pick-up
             {
                 powerUpCounter++;
             }
@@ -60,7 +60,7 @@ public class ScoreCounter : MonoBehaviour
 
             UpdateScoreText();
 
-            if (value == 20 && powerUpPrefab != null)
+            if (value == 20) // +20 = the points pick-up
             {
                 popUpText.SetActive(true);
                 Invoke("HidePopUpText", 1f);
@@ -86,8 +86,8 @@ public class ScoreCounter : MonoBehaviour
 
     private void UpdateScoreText()
     {
-        if (scoreText != null) scoreText.text = "Score: " + score;
-        if (additionalScoreText != null) additionalScoreText.text = "Score: " + score; // Update the additional score text
+        if (scoreText != null) scoreText.text = "SCORE  " + score; // ArcadeClassic has no colon
+        if (additionalScoreText != null) additionalScoreText.text = "SCORE  " + score; // Update the additional score text
         // You can add more logic here to show additional stats when the player is dead
     }
 

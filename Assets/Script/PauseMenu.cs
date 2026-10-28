@@ -1,10 +1,11 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class PauseMenu : MonoBehaviour
 {
     public GameObject pauseMenuUI;
-    public float buttonSpacing = 93f; // Distance between the buttons of the pause panel
+    public float buttonSpacing = 70f; // Distance between the buttons of the pause panel
 
     private bool isPaused = false;
 
@@ -50,29 +51,42 @@ public class PauseMenu : MonoBehaviour
     }
 
     // The pause panel in the scene only has "Main Menu" and "Restart".
-    // Adds RESUME on top and SETTINGS at the bottom, styled like the existing buttons.
+    // Adds RESUME on top and SETTINGS at the bottom, styled like the existing buttons,
+    // spaces all four evenly and dims the game behind the panel.
     void AddPauseButtons()
     {
         if (pauseMenuUI == null) return;
 
-        Button[] buttons = pauseMenuUI.GetComponentsInChildren<Button>(true);
-        if (buttons.Length == 0) return;
+        Button[] sceneButtons = pauseMenuUI.GetComponentsInChildren<Button>(true);
+        if (sceneButtons.Length == 0) return;
 
-        float topY = float.MinValue;
-        float bottomY = float.MaxValue;
-        foreach (Button button in buttons)
+        List<Button> buttons = new List<Button>(sceneButtons);
+        buttons.Sort((a, b) => ((RectTransform)b.transform).anchoredPosition.y.CompareTo(((RectTransform)a.transform).anchoredPosition.y));
+        float topY = ((RectTransform)buttons[0].transform).anchoredPosition.y;
+
+        buttons.Insert(0, CloneButton(sceneButtons[0], "RESUME", Resume));
+        buttons.Add(CloneButton(sceneButtons[0], "SETTINGS", SettingsMenu.Open));
+
+        for (int i = 0; i < buttons.Count; i++)
         {
-            RectTransform rect = (RectTransform)button.transform;
-            topY = Mathf.Max(topY, rect.anchoredPosition.y);
-            rect.anchoredPosition -= new Vector2(0f, buttonSpacing); // Make room for RESUME
-            bottomY = Mathf.Min(bottomY, rect.anchoredPosition.y);
+            RectTransform rect = (RectTransform)buttons[i].transform;
+            rect.anchoredPosition = new Vector2(rect.anchoredPosition.x, topY - i * buttonSpacing);
         }
 
-        CloneButton(buttons[0], "Resume", topY, Resume);
-        CloneButton(buttons[0], "Settings", bottomY - buttonSpacing, SettingsMenu.Open);
+        AddBackdrop();
     }
 
-    void CloneButton(Button template, string label, float y, UnityEngine.Events.UnityAction onClick)
+    // Big dark rectangle behind the pause panel (the panel itself is small)
+    void AddBackdrop()
+    {
+        GameObject backdrop = new GameObject("Backdrop", typeof(RectTransform), typeof(Image));
+        backdrop.transform.SetParent(pauseMenuUI.transform, false);
+        backdrop.transform.SetAsFirstSibling();
+        ((RectTransform)backdrop.transform).sizeDelta = new Vector2(5000f, 5000f);
+        backdrop.GetComponent<Image>().color = RetroUi.Backdrop;
+    }
+
+    Button CloneButton(Button template, string label, UnityEngine.Events.UnityAction onClick)
     {
         GameObject clone = Instantiate(template.gameObject, template.transform.parent);
         clone.name = label;
@@ -90,13 +104,11 @@ public class PauseMenu : MonoBehaviour
         button.onClick = new Button.ButtonClickedEvent(); // Also removes the click events set in the editor
         button.onClick.AddListener(onClick);
 
-        RectTransform rect = (RectTransform)clone.transform;
-        rect.anchoredPosition = new Vector2(rect.anchoredPosition.x, y);
-
         Text text = clone.GetComponentInChildren<Text>(true);
         if (text != null)
         {
             text.text = label;
         }
+        return button;
     }
 }

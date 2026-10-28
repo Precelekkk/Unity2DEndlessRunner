@@ -35,6 +35,11 @@ public class Movement : MonoBehaviour
 
     public float CurrentSpeed => baseSpeed + boostAmount;
 
+    // Speed power-up state, shown by SpeedBoostHud
+    public bool IsBoosted => isSpeedIncreased;
+    public float BoostTimeLeft => isSpeedIncreased ? Mathf.Max(0f, speedIncreaseTimer) : 0f;
+    public float BoostDuration { get; private set; }
+
     // 1 at the start, 2 at double the starting speed - used for score and spawning
     public float SpeedMultiplier => speed > 0f ? CurrentSpeed / speed : 1f;
 
@@ -136,6 +141,7 @@ public class Movement : MonoBehaviour
     void Slam()
     {
         rb.velocity = new Vector2(rb.velocity.x, -fastFallSpeed);
+        AudioManager.PlaySfx(RetroSfx.Slam);
     }
 
     void PlayJumpSound()
@@ -150,19 +156,19 @@ public class Movement : MonoBehaviour
         }
     }
 
+    // Picking up another boost while boosted refills the timer
     public void IncreaseSpeed(float amount, float duration)
     {
-        if (!isSpeedIncreased)
-        {
-            isSpeedIncreased = true;
-            boostAmount = amount;
-            speedIncreaseTimer = duration;
-        }
+        isSpeedIncreased = true;
+        boostAmount = Mathf.Max(boostAmount, amount);
+        speedIncreaseTimer = duration;
+        BoostDuration = duration;
     }
 
     void ResetSpeed()
     {
         isSpeedIncreased = false;
         boostAmount = 0f;
+        speedIncreaseTimer = 0f;
     }
 }

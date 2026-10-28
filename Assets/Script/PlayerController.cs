@@ -24,6 +24,7 @@ public class PlayerController : MonoBehaviour
             if (scoreCounter != null) // Check if the ScoreCounter script is assigned
             {
                 scoreCounter.IncreaseScore(20); // Increase the score by 20 using the ScoreCounter script
+                AudioManager.PlaySfx(RetroSfx.Pickup);
             }
         }
         else if (other.gameObject.CompareTag("Obstacle")) // Check if the collided object is an obstacle
@@ -55,6 +56,7 @@ public class PlayerController : MonoBehaviour
     private IEnumerator DieRoutine()
     {
         int finalScore = scoreCounter != null ? scoreCounter.Score : 0;
+        AudioManager.PlaySfx(RetroSfx.Death);
 
         // Stop the cat where it got hit, so it stays visible during the hit-stop
         Movement movement = GetComponent<Movement>();

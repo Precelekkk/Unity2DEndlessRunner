@@ -20,10 +20,12 @@ The Game itself is a small project that was intended to help me with Self-Develo
 ## Controls
 | Key | Action |
 |---|---|
+| Space / Enter (menu) | Start a run |
 | Space | Jump / second jump in the air / third press: slam down |
 | S / Down arrow | Slam down (in the air) |
 | Esc | Pause / back to menu (Game Over) |
 | R | Restart (Game Over) |
+| Arrows / letters + Enter | Type your initials for the top 10 |
 | F2 | Retro CRT effect on / off |
 | M | Mute / unmute sound |
 

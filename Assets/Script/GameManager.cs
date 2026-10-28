@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -40,8 +41,9 @@ public class GameManager : MonoBehaviour
     private void Update()
     {
         if (CurrentState != State.GameOver) return;
+        if (InitialsEntry.BlocksKeys) return; // Typing the initials - R would restart the game
 
-        // Keyboard shortcuts next to the Reset / Quit buttons
+        // Keyboard shortcuts next to the Restart / Menu buttons
         if (Input.GetKeyDown(KeyCode.R))
         {
             Restart();
@@ -66,13 +68,41 @@ public class GameManager : MonoBehaviour
 
         if (finalScoreText != null)
         {
-            finalScoreText.text = "Score: " + score;
+            finalScoreText.text = "SCORE  " + score; // ArcadeClassic has no colon
         }
 
         if (bestScoreText != null)
         {
-            bestScoreText.text = newBest ? "New best score!" : "Best: " + PlayerPrefs.GetInt(BestScoreKey, 0);
+            bestScoreText.text = newBest ? "NEW BEST SCORE!" : "BEST  " + PlayerPrefs.GetInt(BestScoreKey, 0);
         }
+
+        if (newBest)
+        {
+            StartCoroutine(PlayAfter(RetroSfx.NewRecord, 0.5f)); // After the death sound
+        }
+
+        // Top 10 run: ask for the initials on top of the Game Over screen
+        if (HighScoreTable.Qualifies(score))
+        {
+            InitialsEntry.Open(score, initials =>
+            {
+                int rank = HighScoreTable.Add(initials, score);
+                if (bestScoreText != null && rank > 1)
+                {
+                    bestScoreText.text = "TOP 10  PLACE " + rank;
+                }
+            });
+        }
+        else
+        {
+            HighScoreTable.ClearLastRank();
+        }
+    }
+
+    private static IEnumerator PlayAfter(AudioClip clip, float seconds)
+    {
+        yield return new WaitForSecondsRealtime(seconds);
+        AudioManager.PlaySfx(clip);
     }
 
     // Saves the score of a finished run. Returns true if it beat the best score.
