@@ -1,0 +1,62 @@
+using UnityEngine;
+
+public class CollisionHandler : MonoBehaviour
+{
+    public PlayerController playerController; // Reference to the PlayerController script
+    private bool isInvulnerable = false;
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (!isInvulnerable && collision.gameObject.CompareTag("Obstacle")) // Check if the collided object is an obstacle
+        {
+            if (playerController != null && !isInvulnerable)
+            {
+                playerController.DestroyPlayer(); // Call the DestroyPlayer method from the PlayerController script
+                SetInvulnerability(5f); // Set invulnerability for 5 seconds
+                DisableObstaclesCollision(5f); // Disable obstacles collision for 5 seconds
+                Debug.Log("Player is now protected for 5 seconds!"); // Debug message for player protection
+            }
+            Debug.Log("Player destroyed by obstacle!");
+            
+        }
+    }
+
+    private void DisableObstaclesCollision(float duration)
+    {
+        Collider2D[] obstacleColliders = FindObjectsOfType<Collider2D>(); // Find all colliders in the scene
+
+        foreach (Collider2D collider in obstacleColliders)
+        {
+            if (collider.gameObject.CompareTag("Obstacle")) // Check if the collider belongs to an obstacle
+            {
+                collider.enabled = false; // Disable the collider
+            }
+        }
+
+        Invoke("EnableObstaclesCollision", duration); // Re-enable obstacles collision after the duration
+    }
+
+    private void EnableObstaclesCollision()
+    {
+        Collider2D[] obstacleColliders = FindObjectsOfType<Collider2D>(); // Find all colliders in the scene
+
+        foreach (Collider2D collider in obstacleColliders)
+        {
+            if (collider.gameObject.CompareTag("Obstacle")) // Check if the collider belongs to an obstacle
+            {
+                collider.enabled = true; // Enable the collider
+            }
+        }
+    }
+
+    public void SetInvulnerability(float duration)
+    {
+        isInvulnerable = true;
+        Invoke("DisableInvulnerability", duration);
+    }
+
+    private void DisableInvulnerability()
+    {
+        isInvulnerable = false;
+    }
+}

@@ -1,0 +1,44 @@
+# Unity generated
+/[Ll]ibrary/
+/[Tt]emp/
+/[Oo]bj/
+/[Bb]uild/
+/[Bb]uilds/
+/[Ll]ogs/
+/[Uu]ser[Ss]ettings/
+/[Mm]emoryCaptures/
+/[Rr]ecordings/
+
+# IDE / solution files (Unity regenerates them)
+.vs/
+.vscode/
+.idea/
+*.csproj
+*.sln
+*.suo
+*.user
+*.userprefs
+*.pidb
+*.booproj
+*.svd
+*.pdb
+*.mdb
+*.opendb
+*.VC.db
+.vsconfig
+
+# Unity crash / build artifacts
+crashlytics-buildid.txt
+sysinfo.txt
+*.apk
+*.aab
+*.unitypackage
+*.app
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Unused third-party source file (Fantasy Wooden GUI Free) - not redistributed
+/Assets/Fantasy Wooden GUI  Free/normal_ui_set A/1_normal_ui_set free.psd
+/Assets/Fantasy Wooden GUI  Free/normal_ui_set A/1_normal_ui_set free.psd.meta
