@@ -20,8 +20,8 @@ The Game itself is a small project that was intended to help me with Self-Develo
 ## Controls
 | Key | Action |
 |---|---|
-| Space | Jump (hold for a higher jump) |
-| S / Down arrow | Fast fall (in the air) |
+| Space | Jump / second jump in the air / third press: slam down |
+| S / Down arrow | Slam down (in the air) |
 | Esc | Pause / back to menu (Game Over) |
 | R | Restart (Game Over) |
 

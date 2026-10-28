@@ -9,24 +9,24 @@ public class Movement : MonoBehaviour
     public float maxSpeed = 18f;         // Speed cap for the ramp (power-ups can still go above it)
 
     [Header("Jumping")]
+    // Space #1 on the ground = jump, Space #2 in the air = second jump,
+    // Space #3 in the air = slam down to the ground (dodge something / land faster)
     public float jumpForce;
-    public float fastFallSpeed = 15f;    // Downward speed when S / Down is pressed in the air
-    public float coyoteTime = 0.1f;      // Can still jump this long after running off an edge
-    public float jumpBufferTime = 0.12f; // Space pressed this long before landing still jumps
-    [Range(0f, 1f)]
-    public float jumpCutMultiplier = 0.5f; // Releasing Space early cuts the upward speed (short hop)
+    public float airJumpForce = 3f;      // Force of the second jump
+    public float fastFallSpeed = 15f;    // Downward speed of the slam
+    public float coyoteTime = 0.1f;      // The ground jump still works this long after running off an edge
     public AudioClip jumpSound;
 
-    public GroundCheck groundCheck;
+    public GroundCheck groundCheck;      // Feet trigger - used together with the body contacts below
 
     private Rigidbody2D rb;
     private AudioSource audioSource;
     private Animator animator; // Reference to the Animator component
 
+    private ContactFilter2D groundFilter;
     private bool isGrounded;
-    private bool hasJumped;              // Jumped and not landed yet
+    private int jumpsUsed;               // 0 = on the ground, 1 = jumped, 2 = second jump, 3 = slammed
     private float lastGroundedTime = -1f;
-    private float lastJumpPressedTime = -1f;
 
     private float baseSpeed;             // Ramps up over time
     private float boostAmount;           // Extra speed from the speed power-up
@@ -35,7 +35,7 @@ public class Movement : MonoBehaviour
 
     public float CurrentSpeed => baseSpeed + boostAmount;
 
-    // 1 at the start, 2 at double the starting speed - used for score and effects
+    // 1 at the start, 2 at double the starting speed - used for score and spawning
     public float SpeedMultiplier => speed > 0f ? CurrentSpeed / speed : 1f;
 
     void Start()
@@ -44,11 +44,15 @@ public class Movement : MonoBehaviour
         audioSource = GetComponent<AudioSource>();
         animator = GetComponent<Animator>(); // Assign the Animator component
         baseSpeed = speed;
+
+        // Only contacts that push the cat UP count as ground (not walls / ceilings)
+        groundFilter = new ContactFilter2D();
+        groundFilter.SetNormalAngle(45f, 135f);
     }
 
     void Update()
     {
-        isGrounded = groundCheck.IsGrounded;
+        UpdateGrounded();
 
         baseSpeed = Mathf.Min(baseSpeed + acceleration * Time.deltaTime, Mathf.Max(maxSpeed, speed));
 
@@ -65,6 +69,21 @@ public class Movement : MonoBehaviour
         }
     }
 
+    void UpdateGrounded()
+    {
+        bool touchingGround = rb.IsTouching(groundFilter) || (groundCheck != null && groundCheck.IsGrounded);
+
+        // Right after a jump the cat still touches the ground for a frame,
+        // so it only counts as landed when it is not moving up
+        isGrounded = touchingGround && rb.velocity.y <= 0.01f;
+
+        if (isGrounded)
+        {
+            lastGroundedTime = Time.time;
+            jumpsUsed = 0;
+        }
+    }
+
     void Move()
     {
         transform.Translate(Vector2.right * CurrentSpeed * Time.deltaTime * time);
@@ -72,47 +91,51 @@ public class Movement : MonoBehaviour
 
     void Jump()
     {
-        // The ground trigger stays on for a moment after take-off, so only count
-        // it as a landing when the cat is not moving up anymore
-        if (isGrounded && rb.velocity.y <= 0.01f)
-        {
-            lastGroundedTime = Time.time;
-            hasJumped = false;
-        }
-
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            lastJumpPressedTime = Time.time;
+            bool canGroundJump = jumpsUsed == 0 && Time.time - lastGroundedTime <= coyoteTime;
+
+            if (canGroundJump)
+            {
+                DoJump(jumpForce);
+                jumpsUsed = 1;
+            }
+            else if (jumpsUsed <= 1)
+            {
+                // Second jump (also used when the cat ran off an edge without jumping)
+                DoJump(airJumpForce);
+                jumpsUsed = 2;
+            }
+            else if (jumpsUsed == 2)
+            {
+                Slam();
+                jumpsUsed = 3;
+            }
         }
 
-        bool jumpBuffered = Time.time - lastJumpPressedTime <= jumpBufferTime;
-        bool canJump = !hasJumped && Time.time - lastGroundedTime <= coyoteTime;
-
-        if (jumpBuffered && canJump)
-        {
-            hasJumped = true;
-            lastJumpPressedTime = -1f;
-            rb.velocity = new Vector2(rb.velocity.x, 0f); // Same jump height no matter if falling off an edge
-            rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse); // Apply the jump force
-            PlayJumpSound();
-        }
-
-        // Short hop: let go of Space while going up
-        if (Input.GetKeyUp(KeyCode.Space) && rb.velocity.y > 0f)
-        {
-            rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y * jumpCutMultiplier);
-        }
-
-        // Fast fall
+        // S / Down arrow = slam at any time in the air
         if (!isGrounded && (Input.GetKeyDown(KeyCode.S) || Input.GetKeyDown(KeyCode.DownArrow)))
         {
-            rb.velocity = new Vector2(rb.velocity.x, -fastFallSpeed);
+            Slam();
+            jumpsUsed = 3;
         }
 
         if (animator != null) // Ensure animator is not null before accessing it
         {
             animator.SetBool("Jump", !isGrounded);
         }
+    }
+
+    void DoJump(float force)
+    {
+        rb.velocity = new Vector2(rb.velocity.x, 0f); // Same height no matter if the cat was falling
+        rb.AddForce(Vector2.up * force, ForceMode2D.Impulse);
+        PlayJumpSound();
+    }
+
+    void Slam()
+    {
+        rb.velocity = new Vector2(rb.velocity.x, -fastFallSpeed);
     }
 
     void PlayJumpSound()
