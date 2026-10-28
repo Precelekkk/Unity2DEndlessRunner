@@ -7,6 +7,7 @@ public class BackToMenu : MonoBehaviour
     public void OnButtonClick()
     {
         // Load the specified scene
+        Time.timeScale = 1f; // Leaving the pause menu must unfreeze the game
         SceneManager.LoadScene("Main Menu");
     }
 }   

@@ -13,6 +13,8 @@ public class SpawnManagerForPowerUps : MonoBehaviour
 
     void Start()
     {
+        if (prefabToSpawn == null) return; // Nothing assigned in PlaySec - Instantiate(null) used to throw on every run
+
         for (int i = 0; i < numberOfPrefabs; i++)
         {
             SpawnPrefab();

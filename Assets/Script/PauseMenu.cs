@@ -4,8 +4,6 @@ public class PauseMenu : MonoBehaviour
 {
     public GameObject pauseMenuUI;
     private bool isPaused = false;
-    private float pauseStartTime;
-    private float totalPauseTime;
 
     void Update()
     {
@@ -20,12 +18,6 @@ public class PauseMenu : MonoBehaviour
                 Pause();
             }
         }
-
-        if (isPaused)
-        {
-            totalPauseTime += Time.deltaTime;
-            Debug.Log("Total Pause Time: " + totalPauseTime.ToString("F2") + " seconds");
-        }
     }
 
     public void Resume()
@@ -33,7 +25,6 @@ public class PauseMenu : MonoBehaviour
         pauseMenuUI.SetActive(false);
         Time.timeScale = 1f;
         isPaused = false;
-        Debug.Log("Game Resumed");
     }
 
     void Pause()
@@ -41,7 +32,11 @@ public class PauseMenu : MonoBehaviour
         pauseMenuUI.SetActive(true);
         Time.timeScale = 0f;
         isPaused = true;
-        pauseStartTime = Time.realtimeSinceStartup;
-        Debug.Log("Game Paused");
+    }
+
+    void OnDestroy()
+    {
+        // PauseMenu lives on the Player - if the cat dies while paused, unfreeze the game
+        Time.timeScale = 1f;
     }
 }

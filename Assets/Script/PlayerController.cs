@@ -6,16 +6,8 @@ public class PlayerController : MonoBehaviour
     public GameObject powerUpPrefab; // Assign power-up prefab in the Unity editor
     public ScoreCounter scoreCounter; // Reference to the ScoreCounter script
     public GameObject gameOverObject; // Assign the Game Over GameObject in the Unity editor
-    
-   
 
-    private void PlayerDeath()
-    {
-        // Your logic for handling player death
-
-        // Call the method to reset the score
-        scoreCounter.ResetScoreOnPlayerDeath();
-    }
+    private bool isDead = false;
 
     private void OnTriggerEnter2D(Collider2D other)
     {
@@ -27,19 +19,10 @@ public class PlayerController : MonoBehaviour
             {
                 scoreCounter.IncreaseScore(20); // Increase the score by 20 using the ScoreCounter script
             }
-
-            Debug.Log("Power-up collected!");
         }
         else if (other.gameObject.CompareTag("Obstacle")) // Check if the collided object is an obstacle
         {
-            Destroy(playerPrefab); // Destroy the player object
-            Debug.Log("Player destroyed by obstacle!");
-            // Implement game over logic or any other required actions
-
-            if (gameOverObject != null)
-            {
-                gameOverObject.SetActive(true); // Turn on the Game Over GameObject
-            }
+            DestroyPlayer();
         }
     }
 
@@ -47,20 +30,25 @@ public class PlayerController : MonoBehaviour
     {
         // Assuming your ScoreCounter is on the same GameObject as this script
         scoreCounter = GetComponent<ScoreCounter>();
-        
+
         if (scoreCounter != null) // Check if the ScoreCounter script is assigned
         {
             scoreCounter.IncreaseScore(1); // Increase the score by 1 using the ScoreCounter script
         }
     }
 
+    // The only place where the player dies - used by trigger obstacles (above)
+    // and by solid obstacles (CollisionHandler)
     public void DestroyPlayer()
     {
-        Destroy(gameObject); // Destroy the player object
+        if (isDead) return; // Both handlers can fire in the same frame
+        isDead = true;
 
         if (gameOverObject != null)
         {
             gameOverObject.SetActive(true); // Turn on the Game Over GameObject
         }
+
+        Destroy(playerPrefab != null ? playerPrefab : gameObject); // Destroy the player object
     }
 }

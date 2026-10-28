@@ -5,6 +5,7 @@ public class Movement : MonoBehaviour
     public float speed;
     public float time;
     public float jumpForce;
+    public float fastFallSpeed = 15f; // Downward speed when Space is pressed again in the air
     public AudioClip jumpSound;
     private float MaxJumps = 1;
     private float JumpNumber;
@@ -48,44 +49,38 @@ public class Movement : MonoBehaviour
     }
 
     void Jump()
-{
-    animator.SetBool("Jump", true);
-    if (Input.GetKeyDown(KeyCode.Space))
     {
-        if (animator != null) // Ensure animator is not null before accessing it
-            
-        
-        if (JumpNumber < MaxJumps)
+        if (Input.GetKeyDown(KeyCode.Space))
         {
-            JumpNumber++;
-            rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse); // Apply the jump force
-            PlayJumpSound();
+            if (JumpNumber < MaxJumps)
+            {
+                JumpNumber++;
+                rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse); // Apply the jump force
+                PlayJumpSound();
+            }
+            else if (!isGrounded)
+            {
+                // Second press in the air = fast fall (used to teleport the cat to y = 0)
+                rb.velocity = new Vector2(rb.velocity.x, -fastFallSpeed);
+            }
         }
-        else if (JumpNumber >= MaxJumps && !isGrounded)
-        {
-            Vector3 newPosition = transform.position;
-            newPosition.y = 0;
-            transform.position = newPosition;
-            JumpNumber = 0;
-            rb.velocity = new Vector2(rb.velocity.x, 0f);
-        }
-    }
 
-    if (isGrounded)
-    {
+        if (isGrounded)
+        {
+            JumpNumber = 0;
+        }
+
         if (animator != null) // Ensure animator is not null before accessing it
-            animator.SetBool("Jump", false);
-        
-        JumpNumber = 0;
+        {
+            animator.SetBool("Jump", !isGrounded);
+        }
     }
-}
 
     void PlayJumpSound()
     {
         if (jumpSound != null && audioSource != null)
         {
             audioSource.PlayOneShot(jumpSound);
-            Debug.Log("Jump sound played");
         }
         else
         {

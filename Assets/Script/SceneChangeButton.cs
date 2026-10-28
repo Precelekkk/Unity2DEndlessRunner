@@ -13,6 +13,10 @@ public class SceneChangeButton : MonoBehaviour
             SceneManager.UnloadSceneAsync("PlaySec");
         }
 
+        Time.timeScale = 1f; // Leaving the pause menu must unfreeze the game
+
+        Time.timeScale = 1f; // Leaving the pause menu must unfreeze the game
+
         // Load the "Play" scene again
         SceneManager.LoadScene("PlaySec");
     }

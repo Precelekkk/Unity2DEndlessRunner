@@ -53,7 +53,6 @@ public class ScoreCounter : MonoBehaviour
             }
 
             UpdateScoreText();
-            Debug.Log("Current score: " + score);
 
             if (value == 20 && powerUpPrefab != null)
             {
@@ -69,7 +68,6 @@ public class ScoreCounter : MonoBehaviour
         ResetScore();
 
         // You can add more logic here for handling player death
-        Debug.Log("Player is dead. Score reset to 0.");
     }
 
     private void HidePopUpText()
@@ -82,8 +80,8 @@ public class ScoreCounter : MonoBehaviour
 
     private void UpdateScoreText()
     {
-        scoreText.text = "Score: " + score;
-        additionalScoreText.text = "Score: " + score; // Update the additional score text
+        if (scoreText != null) scoreText.text = "Score: " + score;
+        if (additionalScoreText != null) additionalScoreText.text = "Score: " + score; // Update the additional score text
         // You can add more logic here to show additional stats when the player is dead
     }
 
@@ -93,7 +91,6 @@ public class ScoreCounter : MonoBehaviour
         {
             score++;
             UpdateScoreText();
-            Debug.Log("Current score: " + score);
         }
     }
 
@@ -109,7 +106,6 @@ public class ScoreCounter : MonoBehaviour
         }
 
         UpdateScoreText();
-        Debug.Log("Score reset to 0");
     }
 
     public void SaveScore()
