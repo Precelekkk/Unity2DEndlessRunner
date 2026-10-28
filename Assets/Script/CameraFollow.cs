@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class CameraFollow : MonoBehaviour
@@ -8,17 +6,40 @@ public class CameraFollow : MonoBehaviour
     public float smoothSpeed = 0.125f; // The smooth speed of the camera movement
     public Vector2 offset; // The offset distance between the player and camera on the X and Y axes
 
+    private Vector3 basePosition;  // Camera position without the shake
+    private float shakeTimeLeft;
+    private float shakeDuration;
+    private float shakeStrength;
+
+    void Start()
+    {
+        basePosition = transform.position;
+    }
+
     void LateUpdate()
     {
         if (target != null) // Check if the target is not null
         {
-            Vector3 desiredPosition = new Vector3(target.position.x + offset.x, offset.y, transform.position.z);
-            Vector3 smoothedPosition = Vector3.Lerp(transform.position, desiredPosition, smoothSpeed);
-            transform.position = smoothedPosition;
+            Vector3 desiredPosition = new Vector3(target.position.x + offset.x, offset.y, basePosition.z);
+            basePosition = Vector3.Lerp(basePosition, desiredPosition, smoothSpeed);
         }
-        else
+
+        Vector3 shakeOffset = Vector3.zero;
+        if (shakeTimeLeft > 0f)
         {
-            //Debug.LogWarning("No target assigned to the camera!");
+            // Unscaled time, so the shake also plays during the hit-stop (timeScale = 0)
+            shakeTimeLeft -= Time.unscaledDeltaTime;
+            float strength = shakeStrength * Mathf.Clamp01(shakeTimeLeft / shakeDuration);
+            shakeOffset = (Vector3)(Random.insideUnitCircle * strength);
         }
+
+        transform.position = basePosition + shakeOffset;
+    }
+
+    public void Shake(float duration, float strength)
+    {
+        shakeDuration = Mathf.Max(duration, 0.01f);
+        shakeTimeLeft = shakeDuration;
+        shakeStrength = strength;
     }
 }

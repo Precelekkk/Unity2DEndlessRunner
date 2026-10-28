@@ -20,8 +20,10 @@ The Game itself is a small project that was intended to help me with Self-Develo
 ## Controls
 | Key | Action |
 |---|---|
-| Space | Jump |
-| Esc | Pause |
+| Space | Jump (hold for a higher jump) |
+| S / Down arrow | Fast fall (in the air) |
+| Esc | Pause / back to menu (Game Over) |
+| R | Restart (Game Over) |
 
 ## Credits
 - UI: [Fantasy Wooden GUI : Free](https://assetstore.unity.com/packages/2d/gui/fantasy-wooden-gui-free-103811) (Unity Asset Store)

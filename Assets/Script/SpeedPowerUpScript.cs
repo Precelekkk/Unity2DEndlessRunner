@@ -4,7 +4,6 @@ using System.Collections;
 public class SpeedPowerUpScript : MonoBehaviour
 {
     public float playerSpeedIncreaseAmount = 8f;
-    public float backgroundSpeedIncreaseAmount = 8f;
     public float duration = 10f;
     public ParticleSystem speedParticles; // Public reference to the particle system
 
@@ -24,16 +23,12 @@ public class SpeedPowerUpScript : MonoBehaviour
                     speedParticles.Play(); // Start playing the particle system
 
                     // Start coroutine to disable the particle system after the duration
-                    StartCoroutine(DisableParticlesAfterDuration(duration));
+                    // Run it on the player: this power-up destroys itself below, which would stop its own coroutines
+                    playerMovement.StartCoroutine(DisableParticlesAfterDuration(duration));
                     Debug.Log("Coroutine started to disable particles after " + duration + " seconds");
                 }
 
-                // Now, find and increase the background speed
-                BackgroundMovement backgroundMovement = FindObjectOfType<BackgroundMovement>();
-                if (backgroundMovement != null)
-                {
-                    backgroundMovement.IncreaseSpeed(backgroundSpeedIncreaseAmount, duration);
-                }
+                // The background follows the player, so it speeds up together with the cat
 
                 Destroy(gameObject); // Destroy the SpeedPowerUp object
             }

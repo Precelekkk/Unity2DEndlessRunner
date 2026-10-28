@@ -482,7 +482,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &157297617
 Transform:
   m_ObjectHideFlags: 0
@@ -11741,6 +11741,7 @@ GameObject:
   - component: {fileID: 1126829126}
   - component: {fileID: 1126829129}
   - component: {fileID: 1126829128}
+  - component: {fileID: 1126829130}
   m_Layer: 7
   m_Name: Square
   m_TagString: Ground
@@ -18738,3 +18739,18 @@ MonoBehaviour:
   finalScoreText: {fileID: 288349064}
   bestScoreText: {fileID: 288349074}
   menuScene: Main Menu
+--- !u!114 &1126829130
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1126829125}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ec4de129449741e4a960c081480827f5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  target: {fileID: 1923941556}
+  parallax: 0
+  stepSize: 300

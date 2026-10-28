@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 public class PlayerController : MonoBehaviour
@@ -6,6 +7,11 @@ public class PlayerController : MonoBehaviour
     public GameObject powerUpPrefab; // Assign power-up prefab in the Unity editor
     public ScoreCounter scoreCounter; // Reference to the ScoreCounter script
     public GameObject gameOverObject; // Assign the Game Over GameObject in the Unity editor
+
+    [Header("Death feel")]
+    public float hitStopDuration = 0.15f; // The game freezes for a moment on the hit
+    public float shakeDuration = 0.35f;
+    public float shakeStrength = 0.4f;
 
     private bool isDead = false;
 
@@ -43,10 +49,30 @@ public class PlayerController : MonoBehaviour
     {
         if (isDead) return; // Both handlers can fire in the same frame
         isDead = true;
+        StartCoroutine(DieRoutine());
+    }
+
+    private IEnumerator DieRoutine()
+    {
+        int finalScore = scoreCounter != null ? scoreCounter.Score : 0;
+
+        // Stop the cat where it got hit, so it stays visible during the hit-stop
+        Movement movement = GetComponent<Movement>();
+        if (movement != null) movement.enabled = false;
+        if (scoreCounter != null) scoreCounter.CancelInvoke();
+        Rigidbody2D rb = GetComponent<Rigidbody2D>();
+        if (rb != null) rb.simulated = false;
+
+        CameraFollow cameraFollow = Camera.main != null ? Camera.main.GetComponent<CameraFollow>() : null;
+        if (cameraFollow != null) cameraFollow.Shake(shakeDuration, shakeStrength);
+
+        Time.timeScale = 0f;
+        yield return new WaitForSecondsRealtime(hitStopDuration);
+        Time.timeScale = 1f;
 
         if (GameManager.Instance != null)
         {
-            GameManager.Instance.GameOver(scoreCounter != null ? scoreCounter.Score : 0);
+            GameManager.Instance.GameOver(finalScore);
         }
         else if (gameOverObject != null)
         {

@@ -24,8 +24,12 @@ public class ScoreCounter : MonoBehaviour
 
     public int Score => score;
 
+    private Movement movement;
+
     private void Start()
     {
+        movement = GetComponent<Movement>();
+
         // Initialize the score from the ScoreSaveManager if it exists
         if (ScoreSaveManager.instance != null)
         {
@@ -91,7 +95,8 @@ public class ScoreCounter : MonoBehaviour
     {
         if (isPlayerInScene && playerPrefab != null)
         {
-            score++;
+            // Faster cat = more points per second (1 at the start, 2 at double speed...)
+            score += movement != null ? Mathf.Max(1, Mathf.RoundToInt(movement.SpeedMultiplier)) : 1;
             UpdateScoreText();
         }
     }
