@@ -44,9 +44,13 @@ public class PlayerController : MonoBehaviour
         if (isDead) return; // Both handlers can fire in the same frame
         isDead = true;
 
-        if (gameOverObject != null)
+        if (GameManager.Instance != null)
         {
-            gameOverObject.SetActive(true); // Turn on the Game Over GameObject
+            GameManager.Instance.GameOver(scoreCounter != null ? scoreCounter.Score : 0);
+        }
+        else if (gameOverObject != null)
+        {
+            gameOverObject.SetActive(true); // No GameManager in the scene - just show the Game Over screen
         }
 
         Destroy(playerPrefab != null ? playerPrefab : gameObject); // Destroy the player object

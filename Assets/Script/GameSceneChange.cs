@@ -17,6 +17,7 @@ public class GameSceneChange : MonoBehaviour
         if (scoreCounter != null)
         {
             scoreCounter.SaveScore();
+            GameManager.RecordScore(scoreCounter.Score); // Reaching the end also counts for the best score
         }
         else
         {

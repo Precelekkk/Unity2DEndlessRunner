@@ -22,6 +22,8 @@ public class ScoreCounter : MonoBehaviour
     [Header("BoolValues")]
     private bool isPlayerInScene = true;
 
+    public int Score => score;
+
     private void Start()
     {
         // Initialize the score from the ScoreSaveManager if it exists
